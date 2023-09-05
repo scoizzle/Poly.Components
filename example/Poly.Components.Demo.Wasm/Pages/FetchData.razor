@@ -1,0 +1,85 @@
+﻿@page "/fetchdata/"
+@page "/fetchdata/{DelayInSeconds:int}"
+
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<PageTitle>Weather forecast</PageTitle>
+
+<h1>Weather forecast</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+<p>@DelayInSeconds <button @onclick="IncreaseDelay">+</button><button @onclick="DecreaseDelay">-</button></p>
+
+<p>@_initialLoadTime</p>
+
+
+<Load From="async _ => DateTime.Now" Every="@TimeSpan.FromSeconds(DelayInSeconds)" Context="dateTime">
+    <Loaded>@dateTime</Loaded>
+</Load>
+
+<Load From="@FetchWeatherForecasts" Every="@TimeSpan.FromSeconds(5)" Context="forecasts">
+    <Loading>
+        <p><em>Loading...</em></p>
+    </Loading>
+
+    <Loaded>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Temp. (C)</th>
+                    <th>Temp. (F)</th>
+                    <th>Summary</th>
+                </tr>
+            </thead>
+            <tbody>
+                <Virtualize Items="@forecasts" Context="forecast">
+                    <tr>
+                        <td>@forecast.Date.ToShortDateString()</td>
+                        <td>@forecast.TemperatureC</td>
+                        <td>@forecast.TemperatureF</td>
+                        <td>@forecast.Summary</td>
+                    </tr>
+                </Virtualize>
+            </tbody>
+        </table>
+    </Loaded>
+</Load>
+
+@code {
+    private async Task<WeatherForecast[]?> FetchWeatherForecasts(CancellationToken cancellationToken) {
+        await Task.Delay(TimeSpan.FromSeconds(3));
+
+        return await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json", cancellationToken);
+    }
+
+    DateTime _initialLoadTime = DateTime.Now;
+
+    [Parameter]
+    public int DelayInSeconds { get; set; }
+
+    private void IncreaseDelay() {
+        DelayInSeconds++;
+
+        Navigation.NavigateTo($"/fetchdata/{DelayInSeconds}");
+    }
+
+    private void DecreaseDelay() {
+        DelayInSeconds--;
+
+        Navigation.NavigateTo($"/fetchdata/{DelayInSeconds}");
+    }
+
+    public class WeatherForecast
+    {
+        public DateOnly Date { get; set; }
+
+        public int TemperatureC { get; set; }
+
+        public string? Summary { get; set; }
+
+        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    }
+}
