@@ -33,7 +33,6 @@ public partial class Load<T> : ComponentBase, IAsyncDisposable
     [Parameter] 
     public RenderFragment<Exception?> Error { get; set; } = _ => builder => builder.AddMarkupContent(0, "Error...");
 
-    private object? currentReloadSentinelValue;
     private PeriodicTimer? _timer;
     private RenderFragment? currentContent;
     private StateMachine<LoadState, LoadTrigger> stateMachine = new(LoadState.Init);
@@ -115,25 +114,20 @@ public partial class Load<T> : ComponentBase, IAsyncDisposable
 
     public override async Task SetParametersAsync(ParameterView parameters) {
         var previousPeriod = Every;
+        var previousReloadSentinelValue = ReloadOnChange;
 
         await base.SetParametersAsync(parameters);
 
-        if (Every == previousPeriod)
-            return;
+        if (!ReferenceEquals(ReloadOnChange, previousReloadSentinelValue) ||
+            !Equals(ReloadOnChange, previousReloadSentinelValue))
+        {
+            await stateMachine.FireAsync(LoadTrigger.BeginLoading);
+        }    
 
-        InitializeTimerLoop(Every);
-    }
-
-    protected override void OnParametersSet() {
-        if (ReferenceEquals(ReloadOnChange, currentReloadSentinelValue))
-            return;
-
-        if (Equals(ReloadOnChange, currentReloadSentinelValue))
-            return;
-
-        currentReloadSentinelValue = ReloadOnChange;
-
-        stateMachine.Fire(LoadTrigger.BeginLoading);
+        if (Every != previousPeriod)
+        {
+            InitializeTimerLoop(Every);
+        }
     }
 
     public async ValueTask DisposeAsync() {
