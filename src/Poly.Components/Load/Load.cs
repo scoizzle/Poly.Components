@@ -118,7 +118,7 @@ public partial class Load<T> : ComponentBase, IAsyncDisposable
 
         await base.SetParametersAsync(parameters);
 
-        if (!ReferenceEquals(ReloadOnChange, previousReloadSentinelValue) ||
+        if (!ReferenceEquals(ReloadOnChange, previousReloadSentinelValue) &&
             !Equals(ReloadOnChange, previousReloadSentinelValue))
         {
             await stateMachine.FireAsync(LoadTrigger.BeginLoading);
