@@ -28,10 +28,10 @@ public partial class Load<T> : ComponentBase, IAsyncDisposable
     public bool StaleDataIsAnError { get; set; }
 
     [Parameter] 
-    public RenderFragment Loading { get; set; } = builder => builder.AddMarkupContent(0, "Loading...");
+    public RenderFragment Loading { get; set; } = builder => builder.AddMarkupContent(int.MaxValue, "Loading...");
 
     [Parameter] 
-    public RenderFragment<Exception?> Error { get; set; } = _ => builder => builder.AddMarkupContent(0, "Error...");
+    public RenderFragment<Exception?> Error { get; set; } = _ => builder => builder.AddMarkupContent(int.MinValue, "Error...");
 
     private PeriodicTimer? _timer;
     private RenderFragment? currentContent;
