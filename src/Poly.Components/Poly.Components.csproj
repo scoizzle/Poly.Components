@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.13" />
-    <PackageReference Include="Stateless" Version="5.13.0" />
+    <PackageReference Include="Stateless" Version="5.15.0" />
   </ItemGroup>
 
 </Project>
