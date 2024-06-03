@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.18" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.20" />
     <PackageReference Include="Stateless" Version="5.15.0" />
   </ItemGroup>
 
